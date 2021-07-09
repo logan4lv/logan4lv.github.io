@@ -168,10 +168,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2021-07-08 08:22:22 / Modified: 23:31:14" itemprop="dateCreated datePublished" datetime="2021-07-08T08:22:22+08:00">2021-07-08</time>
+              <time title="Created: 2021-07-08 08:22:22" itemprop="dateCreated datePublished" datetime="2021-07-08T08:22:22+08:00">2021-07-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-09 08:19:47" itemprop="dateModified" datetime="2021-07-09T08:19:47+08:00">2021-07-09</time>
+              </span>
 
           
 
@@ -184,7 +190,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h1><p>基于哈希表的Map实现。</p>
+          <h1 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h1><hr>
+<p>基于哈希表的Map实现。</p>
 <h3 id="底层数据结构"><a href="#底层数据结构" class="headerlink" title="底层数据结构"></a>底层数据结构</h3><p>JDK1.8的底层数据结构为数组+链表+红黑树，之前为数组+链表。</p>
 <h3 id="为什么会引入红黑树"><a href="#为什么会引入红黑树" class="headerlink" title="为什么会引入红黑树"></a>为什么会引入红黑树</h3><p>引入红黑树，是因为当哈希冲突严重时，过长的链表会影响查询性能，这是如果转化为红黑树，会提升查询性能。O(n) -&gt; O(logn)</p>
 <h3 id="链表转化红黑树的时机"><a href="#链表转化红黑树的时机" class="headerlink" title="链表转化红黑树的时机"></a>链表转化红黑树的时机</h3><p>转化为红黑树的条件为哈希桶的数量大于等于64，哈希桶中元素的数量大于8，也就是等于9是，会将链表转化为红黑树。</p>
@@ -208,14 +215,97 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">tableSizeFor</span><span class="params">(<span class="keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = cap - <span class="number">1</span>; <span class="comment">// 避免cap为2的整数次幂数</span></span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">1</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">2</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">4</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">8</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">16</span>;</span><br><span class="line">    <span class="keyword">return</span> (n &lt; <span class="number">0</span>) ? <span class="number">1</span> : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>根据传入的容量值计算一个大于等于该容量值的最小的2的整数次幂。<br>通过不断的无符号右移&gt;&gt;&gt;及|的操作将n低位转为1，最后+1转为2的整数次幂。</p>
-<h3 id="为什么capacity为2的整数次幂"><a href="#为什么capacity为2的整数次幂" class="headerlink" title="为什么capacity为2的整数次幂"></a>为什么capacity为2的整数次幂</h3><p>因为get操作需要根据hash(key)对capacity取余，计算落在哪个哈希桶里，%取余操作对于处理器来说比较慢，而且get是个很频繁的操作，如果容量是2的整数次幂，取余操作可以使用掩码操作，基于公式x mod 2^n = x &amp; (2^n - 1)</p>
-<p>index = hash(key) &amp; (capacity - 1)</p>
+<h3 id="为什么capacity为2的整数次幂"><a href="#为什么capacity为2的整数次幂" class="headerlink" title="为什么capacity为2的整数次幂"></a>为什么capacity为2的整数次幂</h3><p>因为get操作需要根据hash(key)对capacity取余，计算落在哪个哈希桶里，%取余操作对于处理器来说比较慢，而且get是个很频繁的操作，如果容量是2的整数次幂，取余操作可以使用掩码操作，基于公式<strong>x mod 2^n = x &amp; (2^n - 1)</strong></p>
+<blockquote>
+<p><strong>index = hash(key) &amp; (capacity - 1)</strong></p>
+</blockquote>
 <h3 id="为什么hash-key-要将hashCode的高16位无符号右移"><a href="#为什么hash-key-要将hashCode的高16位无符号右移" class="headerlink" title="为什么hash(key)要将hashCode的高16位无符号右移"></a>为什么hash(key)要将hashCode的高16位无符号右移</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>key的hashCode高16位与hashCode进行异或操作，让高16为参与hash值的计算。</p>
-<p>index = hash(key) &amp; (capacity - 1)</p>
-<p>当capacity=16时，capacity-1二进制形式为0000 1111， 只有低4位为1，做&amp;操作时只会对hash(key)的低4位产生影响，<br>所以索引的计算结果只取决于hash值得低4位，让高位参与运算就不会只取决于低4位</p>
+<p>当capacity=16时，capacity-1二进制形式为<strong>0000 1111</strong>， 只有低4位为1，做&amp;操作时只会对hash(key)的低4位产生影响，<br>所以索引的计算结果只取决于hash值得低4位，让高位参与运算就不会只取决于低4位</p>
 <h3 id="put操作的逻辑"><a href="#put操作的逻辑" class="headerlink" title="put操作的逻辑"></a>put操作的逻辑</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="params"><span class="function">                <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>) <span class="comment">// 1.判断散列表是否为空，空则执行resize()进行初始化</span></span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>) <span class="comment">// 2.如果桶中没有元素则创建，放到取模后计算出的桶中</span></span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123; <span class="comment">// 3.产生hash冲突，桶中已存在元素</span></span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k)))) <span class="comment">// 4.判断key是否相同</span></span><br><span class="line">            e = p;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 5.如果当前元素为红黑树节点，将节点放进红黑树中，</span></span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="keyword">else</span> &#123; <span class="comment">// 新增，桶中结构为链表</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123; <span class="comment">// 6.没有找到相同key的元素，将元素放到链表尾端</span></span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k)))) <span class="comment">// 判断key是否相同</span></span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold) <span class="comment">// 如果元素容量大于阈值，则进行扩容</span></span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Object类定义中对hashCode和equals的要求如下："><a href="#Object类定义中对hashCode和equals的要求如下：" class="headerlink" title="Object类定义中对hashCode和equals的要求如下："></a>Object类定义中对hashCode和equals的要求如下：</h3><ol>
+<li>如果两个对象的equals的结果是相等的，则两个对象的hashCode的返回结果也必须是相等的。</li>
+<li>任何时候覆写equals，都必须同时覆写hashCode。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://logan4lv.github.io/2021/07/08/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="logan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Logan4lv">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/07/08/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/" class="post-title-link" itemprop="url">红黑树</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-07-08 08:20:00" itemprop="dateCreated datePublished" datetime="2021-07-08T08:20:00+08:00">2021-07-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-09 08:44:08" itemprop="dateModified" datetime="2021-07-09T08:44:08+08:00">2021-07-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h1><h2 id="树"><a href="#树" class="headerlink" title="树"></a>树</h2><h2 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h2><h4 id="满二叉树"><a href="#满二叉树" class="headerlink" title="满二叉树"></a>满二叉树</h4><h4 id="完全二叉树"><a href="#完全二叉树" class="headerlink" title="完全二叉树"></a>完全二叉树</h4><h2 id="二叉查找树（Binary-Sort-Tree）"><a href="#二叉查找树（Binary-Sort-Tree）" class="headerlink" title="二叉查找树（Binary Sort Tree）"></a>二叉查找树（Binary Sort Tree）</h2><p>定义中没有约定平衡性，只约定了顺序性，会出现<strong>失去平衡</strong>的问题。</p>
+<p>失去平衡后可能会退化成链表，使得查找节点的时间复杂度变成O(n)。</p>
+<h2 id="平衡二叉树（AVL）"><a href="#平衡二叉树（AVL）" class="headerlink" title="平衡二叉树（AVL）"></a>平衡二叉树（AVL）</h2><p>平衡二叉树，是一种特殊的二叉查找树。</p>
+<p>每次插入、删除之后，可以通过左旋右旋重新达到平衡。</p>
+<h4 id="左旋"><a href="#左旋" class="headerlink" title="左旋"></a>左旋</h4><h4 id="右旋"><a href="#右旋" class="headerlink" title="右旋"></a>右旋</h4><h2 id="红黑树-1"><a href="#红黑树-1" class="headerlink" title="红黑树"></a>红黑树</h2><p>红黑树，和AVL树一样，也是维护二叉查找树的平衡。</p>
+<p>红黑树的规则如下：</p>
+<ol>
+<li>节点是红色或者黑色</li>
+<li>根节点是黑色</li>
+<li>每个叶子节点都是黑色的空节点（NIL节点）</li>
+<li>每个红色节点的子节点都是黑色（不存在两个连续的红色节点）</li>
+<li>从任意节点到其每个叶子的所有路径都包含相同数目的黑色节点。</li>
+</ol>
 
       
     </div>
@@ -437,12 +527,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">tags</span>
       </div>
   </nav>
