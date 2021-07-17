@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Redis哨兵集群</title>
+    <url>/2021/06/27/2021-06-27-Redis%E5%93%A8%E5%85%B5%E9%9B%86%E7%BE%A4/</url>
+    <content><![CDATA[<p>Redis的一种高可用方案</p>
+<p>在Redis的主从部署模型中，通过建立哨兵来探测主节点是否存活，及时将从节点提升为主节点</p>
+<span id="more"></span>
+<h3 id="部署哨兵集群的步骤"><a href="#部署哨兵集群的步骤" class="headerlink" title="部署哨兵集群的步骤"></a>部署哨兵集群的步骤</h3>]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CRC</title>
+    <url>/2021/06/28/2021-06-28-CRC/</url>
+    <content><![CDATA[<p>最近在学习Redis，了解到Codis中会使用crc32计算Key的hash值，再对1024取模计算slot。<br>对其中的crc32不是很了解，从网上学习了一下，然后记录在此。 </p>
+<h3 id="什么是CRC？"><a href="#什么是CRC？" class="headerlink" title="什么是CRC？"></a>什么是CRC？</h3><p>CRC是一个错误检测码，用来判断一个数据块是否被毁坏。检测码的长度是固定的，生成它的函数偶尔被用作散列函数。</p>
+<p>CRC如果检测到消息是毁坏的，那它一定是毁坏了。如果检测到是正确的，并不能保证一定正确（会存在未检测到的错误）。</p>
+<span id="more"></span>
+<h3 id="关于CRC中的一些知识点"><a href="#关于CRC中的一些知识点" class="headerlink" title="关于CRC中的一些知识点"></a>关于CRC中的一些知识点</h3><p><strong>奇偶校验位：</strong></p>
+<p>奇偶校验码是CRC的简单版本，属于 1-bit CRC，对应的生成器多项式为 x+1，可以称为CRC-1。</p>
+<p>以ASCII码为例，ASCII码由8it组成，高位bit作为校验位。<br>例：大写字母A的ASCII码为11001001，低7位有3个1，使用偶校验，校验位为1。所以当接收设备收到的不是偶数个1时，说明数据被毁坏了。</p>
+<p><strong>模2除法：</strong></p>
+<p>模2除法的特点就是：每一位除的结果不影响其它位，即不向上一位借位</p>
+<p>模2除法原则：<br>1、被除数的首位为1，商为1<br>2、被除数的首位为0，商为0<br>3、模2除法等同于按位异或（XOR），要保证每次除完首位都为0，才能进行右移<br>4、计算时每次右移一位，当被除数的位数小于除数，其为余数</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">        1001</span><br><span class="line">     -------</span><br><span class="line">1011|1010000</span><br><span class="line">     1011</span><br><span class="line">    --------</span><br><span class="line">        1000 &lt;--- 除数移动到与被除数下一个1的位置对齐</span><br><span class="line">        1011</span><br><span class="line">    --------</span><br><span class="line">         011 &lt;--- 余数，被除数等于零时停止</span><br></pre></td></tr></table></figure>
+
+<p><strong>多项式除法：</strong></p>
+<h3 id="计算步骤"><a href="#计算步骤" class="headerlink" title="计算步骤"></a>计算步骤</h3><p><strong>举个例子：</strong></p>
+<p>计算3-bit CRC，输入条件：</p>
+<ul>
+<li>原始数据： 11010011101100</li>
+<li>多项式： x^3 + x^1 + 1 ，转化为二进制为4位 1011</li>
+</ul>
+<p>计算步骤：</p>
+<ol>
+<li>原始数据右边补零，生成Systematic code（不懂）</li>
+<li>原始数据作为被除数，多项式二进制作为除数，计算得余数为100</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">11010011101100</span> <span class="number">000</span> &lt;--- input right padded by <span class="number">3</span> bits</span><br><span class="line"><span class="number">1011</span>               &lt;--- divisor</span><br><span class="line"><span class="number">01100011101100</span> <span class="number">000</span> &lt;--- result (note the first four bits are the XOR with the divisor beneath, the rest of the bits are unchanged)</span><br><span class="line"> <span class="number">1011</span>              &lt;--- divisor ...</span><br><span class="line"><span class="number">00111011101100</span> <span class="number">000</span></span><br><span class="line">  <span class="number">1011</span></span><br><span class="line"><span class="number">00010111101100</span> <span class="number">000</span></span><br><span class="line">   <span class="number">1011</span></span><br><span class="line"><span class="number">00000001101100</span> <span class="number">000</span> &lt;--- note that the divisor moves over to align with the next <span class="number">1</span> <span class="function">in the <span class="title">dividend</span> <span class="params">(since quotient <span class="keyword">for</span> that step was zero)</span></span></span><br><span class="line"><span class="function">       1011             <span class="params">(in other words, it doesn<span class="string">&#x27;t necessarily move one bit per iteration)</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000110100 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">        1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000011000 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">         1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000001110 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">          1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000000101 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">           101 1</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">-----------------</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000000000 100 &lt;--- remainder (3 bits).  Division algorithm stops here as dividend is equal to zero.</span></span></span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>最终编码为 11010011101100 100，将最终编码作为被除数，多项式作为除数，通过余数为0可以检测消息得正确性</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">11010011101100</span> <span class="number">100</span> &lt;--- input with check value</span><br><span class="line"><span class="number">1011</span>               &lt;--- divisor</span><br><span class="line"><span class="number">01100011101100</span> <span class="number">100</span> &lt;--- result</span><br><span class="line"> <span class="number">1011</span>              &lt;--- divisor ...</span><br><span class="line"><span class="number">00111011101100</span> <span class="number">100</span></span><br><span class="line"></span><br><span class="line">......</span><br><span class="line"></span><br><span class="line"><span class="number">00000000001110</span> <span class="number">100</span></span><br><span class="line">          <span class="number">1011</span></span><br><span class="line"><span class="number">00000000000101</span> <span class="number">100</span></span><br><span class="line">           <span class="number">101</span> <span class="number">1</span></span><br><span class="line">------------------</span><br><span class="line"><span class="number">00000000000000</span> <span class="number">000</span> &lt;--- remainder</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>杂记</category>
+      </categories>
+      <tags>
+        <tag>CRC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HashMap</title>
+    <url>/2021/07/08/2021-07-08-HashMap/</url>
+    <content><![CDATA[<p>基于哈希表的Map实现。</p>
+<h3 id="底层数据结构"><a href="#底层数据结构" class="headerlink" title="底层数据结构"></a>底层数据结构</h3><p>JDK1.8之前为数组+链表。<br>JDK1.8中改为数组+链表+红黑树。</p>
+<span id="more"></span>
+<h3 id="为什么会引入红黑树"><a href="#为什么会引入红黑树" class="headerlink" title="为什么会引入红黑树"></a>为什么会引入红黑树</h3><p>引入红黑树，是因为当哈希冲突严重时，过长的链表会影响查询性能，这是如果转化为红黑树，会提升查询性能。O(n) -&gt; O(logn)</p>
+<h3 id="链表和红黑树相互转化的条件"><a href="#链表和红黑树相互转化的条件" class="headerlink" title="链表和红黑树相互转化的条件"></a>链表和红黑树相互转化的条件</h3><p>转化为红黑树的条件为哈希桶的数量大于等于64，哈希桶中元素的数量大于8，也就是等于9是，会将链表转化为红黑树。</p>
+<p>还有当红黑树的元素数量为6是，会自动转化为链表，因为红黑树节点的占用空间是链表节点的两倍，元素数量较少时，浪费空间而且查询性能也不会有明显的提升，是时间与空间的一次trade off。之所以为6，而不是为8，是因为如果当前哈希桶中元素一直在8徘徊，红黑树与链表一直转来转去会有性能问题。</p>
+<p><strong>变量说明:</strong></p>
+<ul>
+<li>capacity 容量，哈希桶的数量，基于initial capacity，每次扩容两倍</li>
+<li>size 元素数量</li>
+<li>load factor 负载因子，当size &gt;= capacity * loadfactor时，进行哈希桶的扩容</li>
+<li>threshold 阈值，= capacity * loadfactor</li>
+</ul>
+<h3 id="HashMap的初始化"><a href="#HashMap的初始化" class="headerlink" title="HashMap的初始化"></a>HashMap的初始化</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Illegal initial capacity: &quot;</span> + initialCapacity);</span><br><span class="line">    <span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">        initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">    <span class="keyword">if</span> (loadFactor &lt;= <span class="number">0</span> || Float.isNaN(loadFactor))</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Illegal load factor: &quot;</span> + loadFactor);</span><br><span class="line">    <span class="keyword">this</span>.loadFactor = loadFactor;</span><br><span class="line">    <span class="keyword">this</span>.threshold = tableSizeFor(initialCapacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>初始化时，其中一个构造器可以传入两个参数</p>
+<ul>
+<li>initialCapacity 初始容量，哈希桶的数量</li>
+<li>loadFactor 负载因子，元素的装满程度</li>
+</ul>
+<p>假设HashMap需要放置1000个元素，并且没有设置初始容量，随着元素的不断增加，HashMap需要扩容7次才可以完成存储。HashMap每次扩容是增加2倍。</p>
+<p>所以需要提前预估出HashMap要放置的元素数量，合理的设置初始容量，避免不断扩容带来的性能损耗。</p>
+<p>HashMap在初始化时，会根据构造器中指定的initialCapacity计算出比它大的2的整数次幂，然后存入threshold中，在第一次put的时候根据threshold来初始化数组大小。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">tableSizeFor</span><span class="params">(<span class="keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> n = cap - <span class="number">1</span>; <span class="comment">// 避免cap为2的整数次幂数</span></span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">1</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">2</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">4</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">8</span>;</span><br><span class="line">    n |= n &gt;&gt;&gt; <span class="number">16</span>;</span><br><span class="line">    <span class="keyword">return</span> (n &lt; <span class="number">0</span>) ? <span class="number">1</span> : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据传入的容量值计算一个大于等于该容量值的最小的2的整数次幂。<br>通过不断的无符号右移&gt;&gt;&gt;及|的操作将n低位转为1，最后+1转为2的整数次幂。</p>
+<h3 id="为什么capacity为2的整数次幂"><a href="#为什么capacity为2的整数次幂" class="headerlink" title="为什么capacity为2的整数次幂"></a>为什么capacity为2的整数次幂</h3><p>因为get操作需要根据hash(key)对capacity取余，计算落在哪个哈希桶里，%取余操作对于处理器来说比较慢，而且get是个很频繁的操作，如果容量是2的整数次幂，取余操作可以使用掩码操作，基于公式<strong>x mod 2<sup>n</sup> = x &amp; (2<sup>n</sup> - 1)</strong></p>
+<blockquote>
+<p><strong>index = hash(key) &amp; (capacity - 1)</strong></p>
+</blockquote>
+<h3 id="为什么hash-key-要将hashCode的高16位无符号右移"><a href="#为什么hash-key-要将hashCode的高16位无符号右移" class="headerlink" title="为什么hash(key)要将hashCode的高16位无符号右移"></a>为什么hash(key)要将hashCode的高16位无符号右移</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>key的hashCode高16位与hashCode进行异或操作，让高16为参与hash值的计算。</p>
+<p>当capacity=16时，capacity-1二进制形式为<strong>0000 1111</strong>， 只有低4位为1，做&amp;操作时只会对hash(key)的低4位产生影响，<br>所以索引的计算结果只取决于hash值得低4位，让高位参与运算就不会只取决于低4位</p>
+<h3 id="put操作的逻辑"><a href="#put操作的逻辑" class="headerlink" title="put操作的逻辑"></a>put操作的逻辑</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="params"><span class="function">                <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>) <span class="comment">// 1.判断散列表是否为空，空则执行resize()进行初始化</span></span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>) <span class="comment">// 2.如果桶中没有元素则创建，放到取模后计算出的桶中</span></span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123; <span class="comment">// 3.产生hash冲突，桶中已存在元素</span></span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k)))) <span class="comment">// 4.判断key是否相同</span></span><br><span class="line">            e = p;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 5.如果当前元素为红黑树节点，将节点放进红黑树中，</span></span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="keyword">else</span> &#123; <span class="comment">// 新增，桶中结构为链表</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123; <span class="comment">// 大循环，0代表第一个元素，7代表第8个元素</span></span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123; <span class="comment">// 判断e是否为队尾</span></span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>); <span class="comment">// 当产生第9个节点时，binCount = 7，需要转红黑树。结论：hash桶中元素数量为9时，转红黑树</span></span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st，除法条件为binCount=7，也就是第8个元素，队尾为第9个元素</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k)))) <span class="comment">// 判断key是否相同</span></span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>)</span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold) <span class="comment">// 如果元素容量大于阈值，则进行扩容</span></span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Object类定义中对hashCode和equals的要求如下:</strong></p>
+<ol>
+<li>如果两个对象的equals的结果是相等的，则两个对象的hashCode的返回结果也必须是相等的。</li>
+<li>任何时候覆写equals，都必须同时覆写hashCode。</li>
+</ol>
+<h3 id="resize操作的逻辑"><a href="#resize操作的逻辑" class="headerlink" title="resize操作的逻辑"></a>resize操作的逻辑</h3><p><strong>触发时机：</strong></p>
+<ul>
+<li>第一次put的时候，此时数组没有初始化。需要初始化数组，长度为threshold</li>
+<li>当hash桶中冲突严重，达到8的阈值时，如果此时capacity小于64，则进行resize，否则转为红黑树</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 初始化|扩容2倍</span></span><br><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">    <span class="keyword">int</span> oldCap = (oldTab == <span class="keyword">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">    <span class="keyword">int</span> oldThr = threshold;</span><br><span class="line">    <span class="keyword">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123; <span class="comment">// 正常扩容2倍</span></span><br><span class="line">        <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123; <span class="comment">// 此时不做扩容</span></span><br><span class="line">            threshold = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span> oldTab;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                    oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">            newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">        newCap = oldThr;</span><br><span class="line">    <span class="keyword">else</span> &#123;               <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">        newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">        newThr = (<span class="keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;  <span class="comment">// 没有设置过newThr值</span></span><br><span class="line">        <span class="keyword">float</span> ft = (<span class="keyword">float</span>)newCap * loadFactor;</span><br><span class="line">        newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">                    (<span class="keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line">    threshold = newThr; <span class="comment">// 产生新的阈值</span></span><br><span class="line">    <span class="meta">@SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span></span><br><span class="line">        Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node[newCap];</span><br><span class="line">    table = newTab;</span><br><span class="line">    <span class="keyword">if</span> (oldTab != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">            Node&lt;K,V&gt; e;</span><br><span class="line">            <span class="keyword">if</span> ((e = oldTab[j]) != <span class="keyword">null</span>) &#123; <span class="comment">// 取出第一个元素</span></span><br><span class="line">                oldTab[j] = <span class="keyword">null</span>; <span class="comment">// 将旧数组对应下标置为null，便于回收</span></span><br><span class="line">                <span class="keyword">if</span> (e.next == <span class="keyword">null</span>) <span class="comment">// 只有一个元素时，直接放置到新的数组中</span></span><br><span class="line">                    newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 为红黑树时</span></span><br><span class="line">                    ((TreeNode&lt;K,V&gt;)e).split(<span class="keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">                <span class="keyword">else</span> &#123; <span class="comment">// preserve order</span></span><br><span class="line">                    Node&lt;K,V&gt; loHead = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; hiHead = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; next;</span><br><span class="line">                    <span class="keyword">do</span> &#123;</span><br><span class="line">                        next = e.next;</span><br><span class="line">                        <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123; <span class="comment">// 定位到最后一个元素</span></span><br><span class="line">                            <span class="keyword">if</span> (loTail == <span class="keyword">null</span>)</span><br><span class="line">                                loHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                loTail.next = e;</span><br><span class="line">                            loTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (hiTail == <span class="keyword">null</span>)</span><br><span class="line">                                hiHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hiTail.next = e;</span><br><span class="line">                            hiTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">while</span> ((e = next) != <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (loTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        loTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j] = loHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (hiTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        hiTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j + oldCap] = hiHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>Java容器</category>
+      </categories>
+      <tags>
+        <tag>HashMap</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>红黑树</title>
+    <url>/2021/07/09/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/</url>
+    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>满二叉树：</strong><br><strong>完全二叉树：</strong></p>
+<span id="more"></span>
+<h3 id="二叉查找树（Binary-Sort-Tree）"><a href="#二叉查找树（Binary-Sort-Tree）" class="headerlink" title="二叉查找树（Binary Sort Tree）"></a>二叉查找树（Binary Sort Tree）</h3><p>定义中没有约定平衡性，只约定了顺序性，会出现<strong>失去平衡</strong>的问题。</p>
+<p>失去平衡后可能会退化成链表，使得查找节点的时间复杂度变成O(n)。</p>
+<h3 id="平衡二叉树（AVL）"><a href="#平衡二叉树（AVL）" class="headerlink" title="平衡二叉树（AVL）"></a>平衡二叉树（AVL）</h3><p>平衡二叉树，是一种特殊的二叉查找树，维护二叉查找树的平衡。</p>
+<p>每次插入、删除之后，可以通过左旋右旋重新达到平衡。</p>
+<p><strong>左旋：</strong><br><strong>右旋：</strong></p>
+<h3 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h3><p>红黑树，和AVL树一样，也是是一种特殊的二叉查找树，维护二叉查找树的平衡。</p>
+<p>红黑树的规则如下：</p>
+<ol>
+<li>节点是红色或者黑色</li>
+<li>根节点是黑色</li>
+<li>每个叶子节点都是黑色的空节点（NIL节点）</li>
+<li>每个红色节点的子节点都是黑色（不存在两个连续的红色节点）</li>
+<li>从任意节点到其每个叶子的所有路径都包含相同数目的黑色节点。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>红黑树</tag>
+        <tag>树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>常用算法</title>
+    <url>/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h3 id="回溯（backTrack）"><a href="#回溯（backTrack）" class="headerlink" title="回溯（backTrack）"></a>回溯（backTrack）</h3><span id="more"></span>]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>常用算法</tag>
+      </tags>
+  </entry>
+</search>
