@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Redis哨兵集群</title>
+    <url>/2021/06/27/2021-06-27-Redis%E5%93%A8%E5%85%B5%E9%9B%86%E7%BE%A4/</url>
+    <content><![CDATA[<p>Redis的一种高可用方案</p>
+<p>在Redis的主从部署模型中，通过建立哨兵来探测主节点是否存活，及时将从节点提升为主节点</p>
+<span id="more"></span>
+<h3 id="部署哨兵集群的步骤"><a href="#部署哨兵集群的步骤" class="headerlink" title="部署哨兵集群的步骤"></a>部署哨兵集群的步骤</h3>]]></content>
+      <categories>
+        <category>Redis</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CRC</title>
     <url>/2021/06/28/2021-06-28-CRC/</url>
     <content><![CDATA[<p>最近在学习Redis，了解到Codis中会使用crc32计算Key的hash值，再对1024取模计算slot。<br>对其中的crc32不是很了解，从网上学习了一下，然后记录在此。 </p>
@@ -42,26 +56,12 @@
       </tags>
   </entry>
   <entry>
-    <title>Redis哨兵集群</title>
-    <url>/2021/06/27/2021-06-27-Redis%E5%93%A8%E5%85%B5%E9%9B%86%E7%BE%A4/</url>
-    <content><![CDATA[<p>Redis的一种高可用方案</p>
-<p>在Redis的主从部署模型中，通过建立哨兵来探测主节点是否存活，及时将从节点提升为主节点</p>
-<span id="more"></span>
-<h3 id="部署哨兵集群的步骤"><a href="#部署哨兵集群的步骤" class="headerlink" title="部署哨兵集群的步骤"></a>部署哨兵集群的步骤</h3>]]></content>
-      <categories>
-        <category>Redis</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>HashMap</title>
     <url>/2021/07/08/2021-07-08-HashMap/</url>
     <content><![CDATA[<p>基于哈希表的Map实现。</p>
-<h3 id="底层数据结构"><a href="#底层数据结构" class="headerlink" title="底层数据结构"></a>底层数据结构</h3><p>JDK1.8之前为数组+链表。<br>JDK1.8中改为数组+链表+红黑树。</p>
+<h3 id="底层数据结构"><a href="#底层数据结构" class="headerlink" title="底层数据结构"></a>底层数据结构</h3><p>JDK 1.8 为数组+链表+红黑树，之前为数组+链表。</p>
 <span id="more"></span>
-<h3 id="为什么会引入红黑树"><a href="#为什么会引入红黑树" class="headerlink" title="为什么会引入红黑树"></a>为什么会引入红黑树</h3><p>引入红黑树，是因为当哈希冲突严重时，过长的链表会影响查询性能，这是如果转化为红黑树，会提升查询性能。O(n) -&gt; O(logn)</p>
+<h3 id="为什么会引入红黑树"><a href="#为什么会引入红黑树" class="headerlink" title="为什么会引入红黑树"></a>为什么会引入红黑树</h3><p>因为当哈希冲突严重时，过长的链表会影响查询性能，这时如果转化为红黑树，会提升查询性能。O(n) -&gt; O(logn)</p>
 <h3 id="链表和红黑树相互转化的条件"><a href="#链表和红黑树相互转化的条件" class="headerlink" title="链表和红黑树相互转化的条件"></a>链表和红黑树相互转化的条件</h3><p>转化为红黑树的条件为哈希桶的数量大于等于64，哈希桶中元素的数量大于8，也就是等于9是，会将链表转化为红黑树。</p>
 <p>还有当红黑树的元素数量为6是，会自动转化为链表，因为红黑树节点的占用空间是链表节点的两倍，元素数量较少时，浪费空间而且查询性能也不会有明显的提升，是时间与空间的一次trade off。之所以为6，而不是为8，是因为如果当前哈希桶中元素一直在8徘徊，红黑树与链表一直转来转去会有性能问题。</p>
 <p><strong>变量说明:</strong></p>
@@ -114,6 +114,17 @@
       </tags>
   </entry>
   <entry>
+    <title>常用算法</title>
+    <url>/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h3 id="回溯（backTrack）"><a href="#回溯（backTrack）" class="headerlink" title="回溯（backTrack）"></a>回溯（backTrack）</h3><span id="more"></span>]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>常用算法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>红黑树</title>
     <url>/2021/07/09/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/</url>
     <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>满二叉树：</strong><br><strong>完全二叉树：</strong></p>
@@ -139,17 +150,6 @@
       <tags>
         <tag>红黑树</tag>
         <tag>树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>常用算法</title>
-    <url>/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<h3 id="回溯（backTrack）"><a href="#回溯（backTrack）" class="headerlink" title="回溯（backTrack）"></a>回溯（backTrack）</h3><span id="more"></span>]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>常用算法</tag>
       </tags>
   </entry>
 </search>
