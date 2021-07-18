@@ -1,47 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CRC</title>
-    <url>/2021/06/28/2021-06-28-CRC/</url>
-    <content><![CDATA[<p>最近在学习Redis，了解到Codis中会使用crc32计算Key的hash值，再对1024取模计算slot。<br>对其中的crc32不是很了解，从网上学习了一下，然后记录在此。 </p>
-<h3 id="什么是CRC？"><a href="#什么是CRC？" class="headerlink" title="什么是CRC？"></a>什么是CRC？</h3><p>CRC是一个错误检测码，用来判断一个数据块是否被毁坏。检测码的长度是固定的，生成它的函数偶尔被用作散列函数。</p>
-<p>CRC如果检测到消息是毁坏的，那它一定是毁坏了。如果检测到是正确的，并不能保证一定正确（会存在未检测到的错误）。</p>
-<span id="more"></span>
-<h3 id="关于CRC中的一些知识点"><a href="#关于CRC中的一些知识点" class="headerlink" title="关于CRC中的一些知识点"></a>关于CRC中的一些知识点</h3><p><strong>奇偶校验位：</strong></p>
-<p>奇偶校验码是CRC的简单版本，属于 1-bit CRC，对应的生成器多项式为 x+1，可以称为CRC-1。</p>
-<p>以ASCII码为例，ASCII码由8it组成，高位bit作为校验位。<br>例：大写字母A的ASCII码为11001001，低7位有3个1，使用偶校验，校验位为1。所以当接收设备收到的不是偶数个1时，说明数据被毁坏了。</p>
-<p><strong>模2除法：</strong></p>
-<p>模2除法的特点就是：每一位除的结果不影响其它位，即不向上一位借位</p>
-<p>模2除法原则：<br>1、被除数的首位为1，商为1<br>2、被除数的首位为0，商为0<br>3、模2除法等同于按位异或（XOR），要保证每次除完首位都为0，才能进行右移<br>4、计算时每次右移一位，当被除数的位数小于除数，其为余数</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">        1001</span><br><span class="line">     -------</span><br><span class="line">1011|1010000</span><br><span class="line">     1011</span><br><span class="line">    --------</span><br><span class="line">        1000 &lt;--- 除数移动到与被除数下一个1的位置对齐</span><br><span class="line">        1011</span><br><span class="line">    --------</span><br><span class="line">         011 &lt;--- 余数，被除数等于零时停止</span><br></pre></td></tr></table></figure>
-
-<p><strong>多项式除法：</strong></p>
-<h3 id="计算步骤"><a href="#计算步骤" class="headerlink" title="计算步骤"></a>计算步骤</h3><p><strong>举个例子：</strong></p>
-<p>计算3-bit CRC，输入条件：</p>
-<ul>
-<li>原始数据： 11010011101100</li>
-<li>多项式： x^3 + x^1 + 1 ，转化为二进制为4位 1011</li>
-</ul>
-<p>计算步骤：</p>
-<ol>
-<li>原始数据右边补零，生成Systematic code（不懂）</li>
-<li>原始数据作为被除数，多项式二进制作为除数，计算得余数为100</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">11010011101100</span> <span class="number">000</span> &lt;--- input right padded by <span class="number">3</span> bits</span><br><span class="line"><span class="number">1011</span>               &lt;--- divisor</span><br><span class="line"><span class="number">01100011101100</span> <span class="number">000</span> &lt;--- result (note the first four bits are the XOR with the divisor beneath, the rest of the bits are unchanged)</span><br><span class="line"> <span class="number">1011</span>              &lt;--- divisor ...</span><br><span class="line"><span class="number">00111011101100</span> <span class="number">000</span></span><br><span class="line">  <span class="number">1011</span></span><br><span class="line"><span class="number">00010111101100</span> <span class="number">000</span></span><br><span class="line">   <span class="number">1011</span></span><br><span class="line"><span class="number">00000001101100</span> <span class="number">000</span> &lt;--- note that the divisor moves over to align with the next <span class="number">1</span> <span class="function">in the <span class="title">dividend</span> <span class="params">(since quotient <span class="keyword">for</span> that step was zero)</span></span></span><br><span class="line"><span class="function">       1011             <span class="params">(in other words, it doesn<span class="string">&#x27;t necessarily move one bit per iteration)</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000110100 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">        1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000011000 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">         1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000001110 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">          1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000000101 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">           101 1</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">-----------------</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000000000 100 &lt;--- remainder (3 bits).  Division algorithm stops here as dividend is equal to zero.</span></span></span></span><br></pre></td></tr></table></figure>
-
-<ol start="3">
-<li>最终编码为 11010011101100 100，将最终编码作为被除数，多项式作为除数，通过余数为0可以检测消息得正确性</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">11010011101100</span> <span class="number">100</span> &lt;--- input with check value</span><br><span class="line"><span class="number">1011</span>               &lt;--- divisor</span><br><span class="line"><span class="number">01100011101100</span> <span class="number">100</span> &lt;--- result</span><br><span class="line"> <span class="number">1011</span>              &lt;--- divisor ...</span><br><span class="line"><span class="number">00111011101100</span> <span class="number">100</span></span><br><span class="line"></span><br><span class="line">......</span><br><span class="line"></span><br><span class="line"><span class="number">00000000001110</span> <span class="number">100</span></span><br><span class="line">          <span class="number">1011</span></span><br><span class="line"><span class="number">00000000000101</span> <span class="number">100</span></span><br><span class="line">           <span class="number">101</span> <span class="number">1</span></span><br><span class="line">------------------</span><br><span class="line"><span class="number">00000000000000</span> <span class="number">000</span> &lt;--- remainder</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>杂记</category>
-      </categories>
-      <tags>
-        <tag>CRC</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Redis哨兵集群</title>
     <url>/2021/06/27/2021-06-27-Redis%E5%93%A8%E5%85%B5%E9%9B%86%E7%BE%A4/</url>
     <content><![CDATA[<p>Redis的一种高可用方案</p>
@@ -53,6 +12,34 @@
       </categories>
       <tags>
         <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>红黑树</title>
+    <url>/2021/07/09/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/</url>
+    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>满二叉树：</strong><br><strong>完全二叉树：</strong></p>
+<span id="more"></span>
+<h3 id="二叉查找树（Binary-Sort-Tree）"><a href="#二叉查找树（Binary-Sort-Tree）" class="headerlink" title="二叉查找树（Binary Sort Tree）"></a>二叉查找树（Binary Sort Tree）</h3><p>定义中没有约定平衡性，只约定了顺序性，会出现<strong>失去平衡</strong>的问题。</p>
+<p>失去平衡后可能会退化成链表，使得查找节点的时间复杂度变成O(n)。</p>
+<h3 id="平衡二叉树（AVL）"><a href="#平衡二叉树（AVL）" class="headerlink" title="平衡二叉树（AVL）"></a>平衡二叉树（AVL）</h3><p>平衡二叉树，是一种特殊的二叉查找树，维护二叉查找树的平衡。</p>
+<p>每次插入、删除之后，可以通过左旋右旋重新达到平衡。</p>
+<p><strong>左旋：</strong><br><strong>右旋：</strong></p>
+<h3 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h3><p>红黑树，和AVL树一样，也是是一种特殊的二叉查找树，维护二叉查找树的平衡。</p>
+<p>红黑树的规则如下：</p>
+<ol>
+<li>节点是红色或者黑色</li>
+<li>根节点是黑色</li>
+<li>每个叶子节点都是黑色的空节点（NIL节点）</li>
+<li>每个红色节点的子节点都是黑色（不存在两个连续的红色节点）</li>
+<li>从任意节点到其每个叶子的所有路径都包含相同数目的黑色节点。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>数据结构</category>
+      </categories>
+      <tags>
+        <tag>红黑树</tag>
+        <tag>树</tag>
       </tags>
   </entry>
   <entry>
@@ -114,6 +101,47 @@
       </tags>
   </entry>
   <entry>
+    <title>CRC</title>
+    <url>/2021/06/28/2021-06-28-CRC/</url>
+    <content><![CDATA[<p>最近在学习Redis，了解到Codis中会使用crc32计算Key的hash值，再对1024取模计算slot。<br>对其中的crc32不是很了解，从网上学习了一下，然后记录在此。 </p>
+<h3 id="什么是CRC？"><a href="#什么是CRC？" class="headerlink" title="什么是CRC？"></a>什么是CRC？</h3><p>CRC是一个错误检测码，用来判断一个数据块是否被毁坏。检测码的长度是固定的，生成它的函数偶尔被用作散列函数。</p>
+<p>CRC如果检测到消息是毁坏的，那它一定是毁坏了。如果检测到是正确的，并不能保证一定正确（会存在未检测到的错误）。</p>
+<span id="more"></span>
+<h3 id="关于CRC中的一些知识点"><a href="#关于CRC中的一些知识点" class="headerlink" title="关于CRC中的一些知识点"></a>关于CRC中的一些知识点</h3><p><strong>奇偶校验位：</strong></p>
+<p>奇偶校验码是CRC的简单版本，属于 1-bit CRC，对应的生成器多项式为 x+1，可以称为CRC-1。</p>
+<p>以ASCII码为例，ASCII码由8it组成，高位bit作为校验位。<br>例：大写字母A的ASCII码为11001001，低7位有3个1，使用偶校验，校验位为1。所以当接收设备收到的不是偶数个1时，说明数据被毁坏了。</p>
+<p><strong>模2除法：</strong></p>
+<p>模2除法的特点就是：每一位除的结果不影响其它位，即不向上一位借位</p>
+<p>模2除法原则：<br>1、被除数的首位为1，商为1<br>2、被除数的首位为0，商为0<br>3、模2除法等同于按位异或（XOR），要保证每次除完首位都为0，才能进行右移<br>4、计算时每次右移一位，当被除数的位数小于除数，其为余数</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">        1001</span><br><span class="line">     -------</span><br><span class="line">1011|1010000</span><br><span class="line">     1011</span><br><span class="line">    --------</span><br><span class="line">        1000 &lt;--- 除数移动到与被除数下一个1的位置对齐</span><br><span class="line">        1011</span><br><span class="line">    --------</span><br><span class="line">         011 &lt;--- 余数，被除数等于零时停止</span><br></pre></td></tr></table></figure>
+
+<p><strong>多项式除法：</strong></p>
+<h3 id="计算步骤"><a href="#计算步骤" class="headerlink" title="计算步骤"></a>计算步骤</h3><p><strong>举个例子：</strong></p>
+<p>计算3-bit CRC，输入条件：</p>
+<ul>
+<li>原始数据： 11010011101100</li>
+<li>多项式： x^3 + x^1 + 1 ，转化为二进制为4位 1011</li>
+</ul>
+<p>计算步骤：</p>
+<ol>
+<li>原始数据右边补零，生成Systematic code（不懂）</li>
+<li>原始数据作为被除数，多项式二进制作为除数，计算得余数为100</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">11010011101100</span> <span class="number">000</span> &lt;--- input right padded by <span class="number">3</span> bits</span><br><span class="line"><span class="number">1011</span>               &lt;--- divisor</span><br><span class="line"><span class="number">01100011101100</span> <span class="number">000</span> &lt;--- result (note the first four bits are the XOR with the divisor beneath, the rest of the bits are unchanged)</span><br><span class="line"> <span class="number">1011</span>              &lt;--- divisor ...</span><br><span class="line"><span class="number">00111011101100</span> <span class="number">000</span></span><br><span class="line">  <span class="number">1011</span></span><br><span class="line"><span class="number">00010111101100</span> <span class="number">000</span></span><br><span class="line">   <span class="number">1011</span></span><br><span class="line"><span class="number">00000001101100</span> <span class="number">000</span> &lt;--- note that the divisor moves over to align with the next <span class="number">1</span> <span class="function">in the <span class="title">dividend</span> <span class="params">(since quotient <span class="keyword">for</span> that step was zero)</span></span></span><br><span class="line"><span class="function">       1011             <span class="params">(in other words, it doesn<span class="string">&#x27;t necessarily move one bit per iteration)</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000110100 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">        1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000011000 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">         1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000001110 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">          1011</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000000101 000</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">           101 1</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">-----------------</span></span></span></span><br><span class="line"><span class="string"><span class="params"><span class="function">00000000000000 100 &lt;--- remainder (3 bits).  Division algorithm stops here as dividend is equal to zero.</span></span></span></span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>最终编码为 11010011101100 100，将最终编码作为被除数，多项式作为除数，通过余数为0可以检测消息得正确性</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="number">11010011101100</span> <span class="number">100</span> &lt;--- input with check value</span><br><span class="line"><span class="number">1011</span>               &lt;--- divisor</span><br><span class="line"><span class="number">01100011101100</span> <span class="number">100</span> &lt;--- result</span><br><span class="line"> <span class="number">1011</span>              &lt;--- divisor ...</span><br><span class="line"><span class="number">00111011101100</span> <span class="number">100</span></span><br><span class="line"></span><br><span class="line">......</span><br><span class="line"></span><br><span class="line"><span class="number">00000000001110</span> <span class="number">100</span></span><br><span class="line">          <span class="number">1011</span></span><br><span class="line"><span class="number">00000000000101</span> <span class="number">100</span></span><br><span class="line">           <span class="number">101</span> <span class="number">1</span></span><br><span class="line">------------------</span><br><span class="line"><span class="number">00000000000000</span> <span class="number">000</span> &lt;--- remainder</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>杂记</category>
+      </categories>
+      <tags>
+        <tag>CRC</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>常用算法</title>
     <url>/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/</url>
     <content><![CDATA[<h3 id="回溯（backTrack）"><a href="#回溯（backTrack）" class="headerlink" title="回溯（backTrack）"></a>回溯（backTrack）</h3><span id="more"></span>]]></content>
@@ -122,34 +150,6 @@
       </categories>
       <tags>
         <tag>常用算法</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>红黑树</title>
-    <url>/2021/07/09/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/</url>
-    <content><![CDATA[<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>满二叉树：</strong><br><strong>完全二叉树：</strong></p>
-<span id="more"></span>
-<h3 id="二叉查找树（Binary-Sort-Tree）"><a href="#二叉查找树（Binary-Sort-Tree）" class="headerlink" title="二叉查找树（Binary Sort Tree）"></a>二叉查找树（Binary Sort Tree）</h3><p>定义中没有约定平衡性，只约定了顺序性，会出现<strong>失去平衡</strong>的问题。</p>
-<p>失去平衡后可能会退化成链表，使得查找节点的时间复杂度变成O(n)。</p>
-<h3 id="平衡二叉树（AVL）"><a href="#平衡二叉树（AVL）" class="headerlink" title="平衡二叉树（AVL）"></a>平衡二叉树（AVL）</h3><p>平衡二叉树，是一种特殊的二叉查找树，维护二叉查找树的平衡。</p>
-<p>每次插入、删除之后，可以通过左旋右旋重新达到平衡。</p>
-<p><strong>左旋：</strong><br><strong>右旋：</strong></p>
-<h3 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h3><p>红黑树，和AVL树一样，也是是一种特殊的二叉查找树，维护二叉查找树的平衡。</p>
-<p>红黑树的规则如下：</p>
-<ol>
-<li>节点是红色或者黑色</li>
-<li>根节点是黑色</li>
-<li>每个叶子节点都是黑色的空节点（NIL节点）</li>
-<li>每个红色节点的子节点都是黑色（不存在两个连续的红色节点）</li>
-<li>从任意节点到其每个叶子的所有路径都包含相同数目的黑色节点。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>数据结构</category>
-      </categories>
-      <tags>
-        <tag>红黑树</tag>
-        <tag>树</tag>
       </tags>
   </entry>
 </search>
