@@ -15,6 +15,17 @@
       </tags>
   </entry>
   <entry>
+    <title>常用算法</title>
+    <url>/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/</url>
+    <content><![CDATA[<h3 id="回溯（backTrack）"><a href="#回溯（backTrack）" class="headerlink" title="回溯（backTrack）"></a>回溯（backTrack）</h3><span id="more"></span>]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>常用算法</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CRC</title>
     <url>/2021/06/28/2021-06-28-CRC/</url>
     <content><![CDATA[<p>最近在学习Redis，了解到Codis中会使用crc32计算Key的hash值，再对1024取模计算slot。<br>对其中的crc32不是很了解，从网上学习了一下，然后记录在此。 </p>
@@ -139,17 +150,6 @@
       <tags>
         <tag>红黑树</tag>
         <tag>树</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>常用算法</title>
-    <url>/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/</url>
-    <content><![CDATA[<h3 id="回溯（backTrack）"><a href="#回溯（backTrack）" class="headerlink" title="回溯（backTrack）"></a>回溯（backTrack）</h3><span id="more"></span>]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>常用算法</tag>
       </tags>
   </entry>
 </search>
