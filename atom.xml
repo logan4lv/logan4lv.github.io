@@ -6,7 +6,7 @@
   <link href="https://blog.kpgrowing.com/atom.xml" rel="self"/>
   
   <link href="https://blog.kpgrowing.com/"/>
-  <updated>2021-07-18T09:41:02.534Z</updated>
+  <updated>2021-07-19T14:44:04.504Z</updated>
   <id>https://blog.kpgrowing.com/</id>
   
   <author>
@@ -21,15 +21,14 @@
     <link href="https://blog.kpgrowing.com/2021/07/08/2021-07-08-HashMap/"/>
     <id>https://blog.kpgrowing.com/2021/07/08/2021-07-08-HashMap/</id>
     <published>2021-07-08T00:22:22.000Z</published>
-    <updated>2021-07-18T09:41:02.534Z</updated>
+    <updated>2021-07-19T14:44:04.504Z</updated>
     
     
-    <summary type="html">&lt;p&gt;基于哈希表的Map实现。&lt;/p&gt;
-&lt;h3 id=&quot;底层数据结构&quot;&gt;&lt;a href=&quot;#底层数据结构&quot; class=&quot;headerlink&quot; title=&quot;底层数据结构&quot;&gt;&lt;/a&gt;底层数据结构&lt;/h3&gt;&lt;p&gt;JDK 1.8 为数组+链表+红黑树，之前为数组+链表。&lt;/p&gt;</summary>
+    <summary type="html">&lt;p&gt;近期准备出来面试，由于之前没有了解过HashMap的底层实现，所以现在完整的学习一下，在这里做个笔记。这里以问答的形式来组织内容，通过一问一答来解释 HashMap 的实现细节。&lt;/p&gt;</summary>
     
     
     
-    <category term="Java容器" scheme="https://blog.kpgrowing.com/categories/Java%E5%AE%B9%E5%99%A8/"/>
+    <category term="JDK API" scheme="https://blog.kpgrowing.com/categories/JDK-API/"/>
     
     
     <category term="HashMap" scheme="https://blog.kpgrowing.com/tags/HashMap/"/>
