@@ -9,34 +9,6 @@
   </url>
   
   <url>
-    <loc>https://blog.kpgrowing.com/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/</loc>
-    
-    <lastmod>2021-07-17</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/2021/07/09/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/</loc>
-    
-    <lastmod>2021-07-17</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/2021/06/28/2021-06-28-CRC/</loc>
-    
-    <lastmod>2021-07-17</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/2021/06/27/2021-06-27-Redis%E5%93%A8%E5%85%B5%E9%9B%86%E7%BE%A4/</loc>
-    
-    <lastmod>2021-07-17</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>https://blog.kpgrowing.com/about/index.html</loc>
     
     <lastmod>2021-07-17</lastmod>
@@ -60,50 +32,15 @@
 
   <url>
     <loc>https://blog.kpgrowing.com/</loc>
-    <lastmod>2021-07-18</lastmod>
+    <lastmod>2021-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   
   <url>
-    <loc>https://blog.kpgrowing.com/tags/CRC/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/tags/Redis/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://blog.kpgrowing.com/tags/HashMap/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/tags/%E7%BA%A2%E9%BB%91%E6%A0%91/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/tags/%E6%A0%91/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/tags/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2021-07-18</lastmod>
+    <lastmod>2021-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -111,36 +48,8 @@
 
   
   <url>
-    <loc>https://blog.kpgrowing.com/categories/%E6%9D%82%E8%AE%B0/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/categories/Redis/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://blog.kpgrowing.com/categories/Java%E5%AE%B9%E5%99%A8/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/</loc>
-    <lastmod>2021-07-18</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://blog.kpgrowing.com/categories/%E7%AE%97%E6%B3%95/</loc>
-    <lastmod>2021-07-18</lastmod>
+    <lastmod>2021-07-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

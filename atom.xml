@@ -6,7 +6,7 @@
   <link href="https://blog.kpgrowing.com/atom.xml" rel="self"/>
   
   <link href="https://blog.kpgrowing.com/"/>
-  <updated>2021-07-17T13:31:14.880Z</updated>
+  <updated>2021-07-18T09:41:02.534Z</updated>
   <id>https://blog.kpgrowing.com/</id>
   
   <author>
@@ -15,46 +15,6 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>常用算法</title>
-    <link href="https://blog.kpgrowing.com/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/"/>
-    <id>https://blog.kpgrowing.com/2021/07/12/2021-07-12-%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AE%97%E6%B3%95/</id>
-    <published>2021-07-12T07:20:00.000Z</published>
-    <updated>2021-07-17T13:31:14.880Z</updated>
-    
-    
-    <summary type="html">&lt;h3 id=&quot;回溯（backTrack）&quot;&gt;&lt;a href=&quot;#回溯（backTrack）&quot; class=&quot;headerlink&quot; title=&quot;回溯（backTrack）&quot;&gt;&lt;/a&gt;回溯（backTrack）&lt;/h3&gt;</summary>
-    
-    
-    
-    <category term="算法" scheme="https://blog.kpgrowing.com/categories/%E7%AE%97%E6%B3%95/"/>
-    
-    
-    <category term="常用算法" scheme="https://blog.kpgrowing.com/tags/%E5%B8%B8%E7%94%A8%E7%AE%97%E6%B3%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>红黑树</title>
-    <link href="https://blog.kpgrowing.com/2021/07/09/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/"/>
-    <id>https://blog.kpgrowing.com/2021/07/09/2021-07-09-%E7%BA%A2%E9%BB%91%E6%A0%91/</id>
-    <published>2021-07-09T00:20:00.000Z</published>
-    <updated>2021-07-17T13:31:12.509Z</updated>
-    
-    
-    <summary type="html">&lt;h3 id=&quot;二叉树&quot;&gt;&lt;a href=&quot;#二叉树&quot; class=&quot;headerlink&quot; title=&quot;二叉树&quot;&gt;&lt;/a&gt;二叉树&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;满二叉树：&lt;/strong&gt;&lt;br&gt;&lt;strong&gt;完全二叉树：&lt;/strong&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="数据结构" scheme="https://blog.kpgrowing.com/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
-    
-    
-    <category term="红黑树" scheme="https://blog.kpgrowing.com/tags/%E7%BA%A2%E9%BB%91%E6%A0%91/"/>
-    
-    <category term="树" scheme="https://blog.kpgrowing.com/tags/%E6%A0%91/"/>
-    
-  </entry>
   
   <entry>
     <title>HashMap</title>
@@ -73,47 +33,6 @@
     
     
     <category term="HashMap" scheme="https://blog.kpgrowing.com/tags/HashMap/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>CRC</title>
-    <link href="https://blog.kpgrowing.com/2021/06/28/2021-06-28-CRC/"/>
-    <id>https://blog.kpgrowing.com/2021/06/28/2021-06-28-CRC/</id>
-    <published>2021-06-28T06:43:26.000Z</published>
-    <updated>2021-07-17T13:31:06.259Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;最近在学习Redis，了解到Codis中会使用crc32计算Key的hash值，再对1024取模计算slot。&lt;br&gt;对其中的crc32不是很了解，从网上学习了一下，然后记录在此。 &lt;/p&gt;
-&lt;h3 id=&quot;什么是CRC？&quot;&gt;&lt;a href=&quot;#什么是CRC？&quot; class=&quot;headerlink&quot; title=&quot;什么是CRC？&quot;&gt;&lt;/a&gt;什么是CRC？&lt;/h3&gt;&lt;p&gt;CRC是一个错误检测码，用来判断一个数据块是否被毁坏。检测码的长度是固定的，生成它的函数偶尔被用作散列函数。&lt;/p&gt;
-&lt;p&gt;CRC如果检测到消息是毁坏的，那它一定是毁坏了。如果检测到是正确的，并不能保证一定正确（会存在未检测到的错误）。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="杂记" scheme="https://blog.kpgrowing.com/categories/%E6%9D%82%E8%AE%B0/"/>
-    
-    
-    <category term="CRC" scheme="https://blog.kpgrowing.com/tags/CRC/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Redis哨兵集群</title>
-    <link href="https://blog.kpgrowing.com/2021/06/27/2021-06-27-Redis%E5%93%A8%E5%85%B5%E9%9B%86%E7%BE%A4/"/>
-    <id>https://blog.kpgrowing.com/2021/06/27/2021-06-27-Redis%E5%93%A8%E5%85%B5%E9%9B%86%E7%BE%A4/</id>
-    <published>2021-06-27T06:43:26.000Z</published>
-    <updated>2021-07-17T13:31:00.806Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;Redis的一种高可用方案&lt;/p&gt;
-&lt;p&gt;在Redis的主从部署模型中，通过建立哨兵来探测主节点是否存活，及时将从节点提升为主节点&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="Redis" scheme="https://blog.kpgrowing.com/categories/Redis/"/>
-    
-    
-    <category term="Redis" scheme="https://blog.kpgrowing.com/tags/Redis/"/>
     
   </entry>
   
