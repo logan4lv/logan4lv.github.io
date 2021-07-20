@@ -6,7 +6,7 @@
   <link href="https://blog.kpgrowing.com/atom.xml" rel="self"/>
   
   <link href="https://blog.kpgrowing.com/"/>
-  <updated>2021-07-19T14:44:04.504Z</updated>
+  <updated>2021-07-20T01:53:53.507Z</updated>
   <id>https://blog.kpgrowing.com/</id>
   
   <author>
@@ -21,10 +21,10 @@
     <link href="https://blog.kpgrowing.com/2021/07/08/2021-07-08-HashMap/"/>
     <id>https://blog.kpgrowing.com/2021/07/08/2021-07-08-HashMap/</id>
     <published>2021-07-08T00:22:22.000Z</published>
-    <updated>2021-07-19T14:44:04.504Z</updated>
+    <updated>2021-07-20T01:53:53.507Z</updated>
     
     
-    <summary type="html">&lt;p&gt;近期准备出来面试，由于之前没有了解过HashMap的底层实现，所以现在完整的学习一下，在这里做个笔记。这里以问答的形式来组织内容，通过一问一答来解释 HashMap 的实现细节。&lt;/p&gt;</summary>
+    <summary type="html">&lt;p&gt;近期准备出来面试，在这里将 HashMap 的底层逻辑整理一下，做个笔记。内容以问答的形式来组织，通过一问一答来解释 HashMap 的实现细节。&lt;/p&gt;</summary>
     
     
     
