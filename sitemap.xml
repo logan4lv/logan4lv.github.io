@@ -4,7 +4,7 @@
   <url>
     <loc>https://blog.kpgrowing.com/2021/07/08/2021-07-08-HashMap/</loc>
     
-    <lastmod>2021-07-20</lastmod>
+    <lastmod>2021-07-27</lastmod>
     
   </url>
   
@@ -32,7 +32,7 @@
 
   <url>
     <loc>https://blog.kpgrowing.com/</loc>
-    <lastmod>2021-07-21</lastmod>
+    <lastmod>2021-07-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -40,7 +40,7 @@
   
   <url>
     <loc>https://blog.kpgrowing.com/tags/HashMap/</loc>
-    <lastmod>2021-07-21</lastmod>
+    <lastmod>2021-07-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>
@@ -48,8 +48,8 @@
 
   
   <url>
-    <loc>https://blog.kpgrowing.com/categories/JDK-API/</loc>
-    <lastmod>2021-07-21</lastmod>
+    <loc>https://blog.kpgrowing.com/categories/Java/</loc>
+    <lastmod>2021-07-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
   </url>

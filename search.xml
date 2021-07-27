@@ -3,7 +3,7 @@
   <entry>
     <title>HashMap</title>
     <url>/2021/07/08/2021-07-08-HashMap/</url>
-    <content><![CDATA[<p>近期准备出来面试，在这里将 HashMap 的底层逻辑整理一下，做个笔记。内容以问答的形式来组织，通过一问一答来解释 HashMap 的实现细节。</p>
+    <content><![CDATA[<p>在这里将 HashMap 的底层实现整理一下，做个笔记。</p>
 <span id="more"></span>
 
 <h3 id="1-底层数据结构是什么？"><a href="#1-底层数据结构是什么？" class="headerlink" title="1. 底层数据结构是什么？"></a>1. 底层数据结构是什么？</h3><p>JDK 1.8 之前 HashMap 的数据结构为 “ 数组 + 链表”。到了 JDK 1.8 后，改为了 “数组 + 链表 + 红黑树”。</p>
@@ -103,7 +103,7 @@
 </ol>
 ]]></content>
       <categories>
-        <category>JDK API</category>
+        <category>Java</category>
       </categories>
       <tags>
         <tag>HashMap</tag>
